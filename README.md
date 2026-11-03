@@ -24,16 +24,22 @@ Automatically cross-posts articles published on your WordPress site (e.g. by Sor
 2. Activate **Soro to Google Business Profile Auto Post** in the Plugins screen.
 3. Open **Settings → Soro → Google Business**.
 
-## Google Cloud Console setup (one time, ~5 minutes)
+## Google Cloud Console setup (one time)
+
+> **Important:** the Business Profile API (formerly "My Business API", the one that creates posts) is a **restricted API**. It is hidden from the API Library and has a quota of 0 until Google approves your project through their access request form. This is Google's gate — every third-party posting tool had to pass it.
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project (or use an existing one).
-2. In the navigation menu, go to **APIs & Services → Library**, search for **"Business Profile API"** and click **Enable**.
-3. Go to **APIs & Services → OAuth consent screen** and configure it:
+2. Go to **APIs & Services → OAuth consent screen** and configure it:
    - User type: **External**, then add your own Google account email as a **Test user** (required while the app is in testing mode).
-4. Go to **APIs & Services → Credentials → Create Credentials → OAuth client ID**:
+3. Go to **APIs & Services → Credentials → Create Credentials → OAuth client ID**:
    - Application type: **Web application**
    - Under **Authorized redirect URIs**, add the redirect URI shown on the plugin settings page (it looks like `https://yoursite.com/wp-admin/admin.php?page=soro-gbp-auto-post&sgbp_oauth=callback` — it must match exactly).
-5. Copy the **Client ID** and **Client Secret** into the plugin settings page and save.
+4. Copy the **Client ID** and **Client Secret** into the plugin settings page and save.
+5. **Request Business Profile API access**: log in with the Google account that owns your Business Profile and complete the access request form linked from [Google's prerequisites page](https://developers.google.com/my-business/content/prereqs). Use your project's ID and describe the use case, e.g. *"Automatically publish our website's blog articles as What's New posts on our own Business Profile."* Requirements: your Business Profile must be verified.
+6. Wait for the approval email (typically a few days to a couple of weeks). Approval is granted per Google Cloud project.
+7. Once approved, enable the API — either via the direct link `https://console.cloud.google.com/apis/library/mybusiness.googleapis.com` or by following the enable steps on [Google's basic setup page](https://developers.google.com/my-business/content/basic-setup). If it still does not appear, check the API's quota page in your project — approval sometimes shows up there first.
+
+Until the project is approved, the plugin can save credentials but "Refresh locations" will fail with a 403 error. This is expected and resolves once Google grants access.
 
 ## Connecting your account
 
