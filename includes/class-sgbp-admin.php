@@ -39,8 +39,16 @@ class SGBP_Admin {
 			}
 			$code = sanitize_text_field( wp_unslash( $_GET['code'] ) );
 			$result = SGBP_Google_API::exchange_code( $code );
-			$arg = is_wp_error( $result ) ? 'oauth_error' : 'oauth_success';
-			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&sgbp_msg=' . $arg ) );
+			if ( is_wp_error( $result ) ) {
+				SGBP_Logger::log( array(
+					'status'  => 'error',
+					'title'   => 'OAuth connect',
+					'message' => 'Token exchange failed: ' . $result->get_error_message(),
+				) );
+				wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&sgbp_msg=oauth_error&sgbp_err=' . rawurlencode( $result->get_error_message() ) ) );
+				exit;
+			}
+			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&sgbp_msg=oauth_success' ) );
 			exit;
 		}
 
@@ -138,11 +146,14 @@ class SGBP_Admin {
 		$messages = self::messages();
 
 		if ( isset( $_GET['sgbp_msg'] ) && isset( $messages[ $_GET['sgbp_msg'] ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$msg = $messages[ sanitize_key( wp_unslash( $_GET['sgbp_msg'] ) ) ]; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( 'locations_error' === $_GET['sgbp_msg'] && isset( $_GET['sgbp_err'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				$msg .= sanitize_text_field( rawurldecode( wp_unslash( $_GET['sgbp_err'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$key = sanitize_key( wp_unslash( $_GET['sgbp_msg'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$msg = $messages[ $key ];
+			if ( isset( $_GET['sgbp_err'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$msg .= ' ' . sanitize_text_field( rawurldecode( wp_unslash( $_GET['sgbp_err'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $msg ) . '</p></div>';
+			$error_keys = array( 'oauth_error', 'oauth_failed', 'locations_error' );
+			$class = in_array( $key, $error_keys, true ) ? 'notice-error' : 'notice-success';
+			echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . esc_html( $msg ) . '</p></div>';
 		}
 		?>
 		<div class="wrap">
