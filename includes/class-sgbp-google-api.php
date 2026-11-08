@@ -9,7 +9,9 @@ class SGBP_Google_API {
 	const AUTH_URL        = 'https://accounts.google.com/o/oauth2/v2/auth';
 	const TOKEN_URL       = 'https://oauth2.googleapis.com/token';
 	const SCOPE           = 'https://www.googleapis.com/auth/business.manage';
-	const API_BASE        = 'https://mybusiness.googleapis.com/v4';
+	const ACCOUNTS_BASE   = 'https://mybusinessaccountmanagement.googleapis.com/v1';
+	const INFO_BASE       = 'https://mybusinessbusinessinformation.googleapis.com/v1';
+	const POSTS_BASE      = 'https://mybusiness.googleapis.com/v4';
 
 	public static function settings() {
 		return wp_parse_args(
@@ -52,7 +54,7 @@ class SGBP_Google_API {
 		return add_query_arg(
 			array(
 				'client_id'     => $s['client_id'],
-				'redirect_uri'  => self::redirect_uri(),
+				'redirect_uri'  => rawurlencode( self::redirect_uri() ),
 				'response_type' => 'code',
 				'scope'         => self::SCOPE,
 				'access_type'   => 'offline',
@@ -136,7 +138,7 @@ class SGBP_Google_API {
 		return $s['access_token'];
 	}
 
-	private static function request( $method, $path, $body = null ) {
+	private static function request( $method, $url, $body = null ) {
 		$token = self::get_access_token();
 		if ( is_wp_error( $token ) ) {
 			return $token;
@@ -152,7 +154,7 @@ class SGBP_Google_API {
 		if ( null !== $body ) {
 			$args['body'] = wp_json_encode( $body );
 		}
-		$response = wp_remote_request( self::API_BASE . '/' . ltrim( $path, '/' ), $args );
+		$response = wp_remote_request( $url, $args );
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
@@ -166,7 +168,7 @@ class SGBP_Google_API {
 	}
 
 	public static function get_accounts() {
-		$data = self::request( 'GET', 'accounts' );
+		$data = self::request( 'GET', self::ACCOUNTS_BASE . '/accounts' );
 		if ( is_wp_error( $data ) ) {
 			return $data;
 		}
@@ -181,12 +183,19 @@ class SGBP_Google_API {
 		$locations = array();
 		foreach ( $accounts as $account ) {
 			$name     = $account['name'];
-			$response = self::request( 'GET', $name . '/locations' );
+			$response = self::request( 'GET', self::INFO_BASE . '/' . $name . '/locations?readMask=name,title' );
 			if ( is_wp_error( $response ) ) {
 				continue;
 			}
 			if ( ! empty( $response['locations'] ) ) {
 				foreach ( $response['locations'] as $location ) {
+					// Ensure the full resource name (accounts/{id}/locations/{id}) is used.
+					if ( empty( $location['name'] ) ) {
+						continue;
+						}
+					if ( 0 !== strpos( $location['name'], 'accounts/' ) ) {
+						$location['name'] = $name . '/' . ltrim( $location['name'], '/' );
+					}
 					$locations[] = $location;
 				}
 			}
@@ -195,7 +204,7 @@ class SGBP_Google_API {
 	}
 
 	public static function create_local_post( $location_name, $post ) {
-		return self::request( 'POST', $location_name . '/localPosts', $post );
+		return self::request( 'POST', self::POSTS_BASE . '/' . $location_name . '/localPosts', $post );
 	}
 
 	public static function build_local_post_body( $args ) {
@@ -211,8 +220,8 @@ class SGBP_Google_API {
 		if ( ! empty( $args['image_url'] ) ) {
 			$body['media'] = array(
 				array(
-					'mediaType' => 'MEDIA_TYPE_PHOTO',
-					'sourceUrl' => $args['image_url'],
+					'mediaFormat' => 'PHOTO',
+					'sourceUrl'   => $args['image_url'],
 				),
 			);
 		}

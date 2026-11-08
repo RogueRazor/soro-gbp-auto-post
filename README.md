@@ -51,5 +51,12 @@ Automatically cross-posts articles published on your WordPress site (e.g. by Sor
 
 ## Changelog
 
+### 1.0.1
+- Fixed the OAuth connect flow: the redirect URI is now properly URL-encoded, so Google returns to the plugin's callback (previously the connection silently failed).
+- Switched account and location lookups to the current Business Profile APIs (My Business Account Management API and My Business Business Information API) after Google shut down the old v4 accounts/locations endpoints. Enable both APIs in Google Cloud Console.
+- Fixed the local post media field (`mediaFormat: PHOTO` instead of `mediaType`).
+- Location names are normalized to the full `accounts/{id}/locations/{id}` path; the location list shows proper titles.
+- Real Google error messages are now shown on the settings page and logged; error notices display in red.
+
 ### 1.0.0
 - Initial release.
