@@ -29,12 +29,22 @@ class SGBP_Admin {
 		}
 
 		if ( isset( $_GET['page'], $_GET['sgbp_oauth'] ) && self::PAGE_SLUG === $_GET['page'] && 'callback' === $_GET['sgbp_oauth'] ) {
+			SGBP_Logger::log( array(
+				'status'  => 'info',
+				'title'   => 'OAuth callback',
+				'message' => 'Callback request received. code=' . ( isset( $_GET['code'] ) ? 'present' : 'missing' ) . ', state=' . ( isset( $_GET['state'] ) ? 'present' : 'missing' ) . ', URI=' . esc_url_raw( set_url_scheme( 'http://' . ( isset( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : '' ) . ( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '' ) ) ),
+			) );
 			if ( ! isset( $_GET['code'] ) ) {
 				wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '&sgbp_msg=oauth_failed' ) );
 				exit;
 			}
 			$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
 			if ( ! wp_verify_nonce( $state, 'sgbp_oauth' ) ) {
+				SGBP_Logger::log( array(
+					'status'  => 'error',
+					'title'   => 'OAuth callback',
+					'message' => 'Invalid OAuth state (nonce check failed). This usually means the browser session or a caching plugin dropped the state parameter.',
+				) );
 				wp_die( esc_html__( 'Invalid OAuth state.', 'soro-gbp-auto-post' ) );
 			}
 			$code = sanitize_text_field( wp_unslash( $_GET['code'] ) );
