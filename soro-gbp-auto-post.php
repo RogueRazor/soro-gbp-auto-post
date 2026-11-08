@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Soro to Google Business Profile Auto Post
  * Description: Automatically cross-posts articles published on your site (e.g. by Soro) to your Google Business Profile as "What's New" posts, with language filtering and featured image support.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: RogueRazor
  * License: GPL-2.0-or-later
  * Text Domain: soro-gbp-auto-post
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SGBP_VERSION', '1.0.1' );
+define( 'SGBP_VERSION', '1.0.2' );
 define( 'SGBP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SGBP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -24,6 +24,7 @@ require_once SGBP_PLUGIN_DIR . 'includes/class-sgbp-language.php';
 require_once SGBP_PLUGIN_DIR . 'includes/class-sgbp-logger.php';
 require_once SGBP_PLUGIN_DIR . 'includes/class-sgbp-post-sync.php';
 require_once SGBP_PLUGIN_DIR . 'includes/class-sgbp-admin.php';
+require_once SGBP_PLUGIN_DIR . 'includes/class-sgbp-updater.php';
 
 final class SGBP_Plugin {
 
@@ -66,6 +67,7 @@ final class SGBP_Plugin {
 	public function init() {
 		SGBP_Admin::init();
 		SGBP_Post_Sync::init();
+		SGBP_Updater::init();
 	}
 }
 
