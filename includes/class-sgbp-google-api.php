@@ -52,7 +52,7 @@ class SGBP_Google_API {
 		return add_query_arg(
 			array(
 				'client_id'     => $s['client_id'],
-				'redirect_uri'  => self::redirect_uri(),
+				'redirect_uri'  => rawurlencode( self::redirect_uri() ),
 				'response_type' => 'code',
 				'scope'         => self::SCOPE,
 				'access_type'   => 'offline',
