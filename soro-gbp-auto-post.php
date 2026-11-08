@@ -6,6 +6,9 @@
  * Author: RogueRazor
  * License: GPL-2.0-or-later
  * Text Domain: soro-gbp-auto-post
+ * Update URI: https://github.com/RogueRazor/soro-gbp-auto-post
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
