@@ -4,7 +4,7 @@ Tags: google business profile, google my business, local seo, autopost, soro
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 7.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,9 @@ No. It only cross-posts your published articles to your Google Business Profile.
 Yes, Google removes Business Profile posts automatically over time. Simply keep publishing articles and the plugin keeps your profile fresh.
 
 == Changelog ==
+
+= 1.0.2 =
+* Added a built-in GitHub update client: the plugin now checks its GitHub releases and offers one-click updates from Dashboard → Updates (no third-party updater plugin needed).
 
 = 1.0.1 =
 * Fixed the OAuth connect flow: the redirect URI is now properly URL-encoded, so Google returns to the plugin's callback (previously the connection silently failed).
