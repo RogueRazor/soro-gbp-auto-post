@@ -220,8 +220,8 @@ class SGBP_Google_API {
 		if ( ! empty( $args['image_url'] ) ) {
 			$body['media'] = array(
 				array(
-					'mediaType' => 'MEDIA_TYPE_PHOTO',
-					'sourceUrl' => $args['image_url'],
+					'mediaFormat' => 'PHOTO',
+					'sourceUrl'   => $args['image_url'],
 				),
 			);
 		}
