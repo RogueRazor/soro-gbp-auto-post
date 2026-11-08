@@ -189,6 +189,13 @@ class SGBP_Google_API {
 			}
 			if ( ! empty( $response['locations'] ) ) {
 				foreach ( $response['locations'] as $location ) {
+					// Ensure the full resource name (accounts/{id}/locations/{id}) is used.
+					if ( empty( $location['name'] ) ) {
+						continue;
+						}
+					if ( 0 !== strpos( $location['name'], 'accounts/' ) ) {
+						$location['name'] = $name . '/' . ltrim( $location['name'], '/' );
+					}
 					$locations[] = $location;
 				}
 			}

@@ -268,7 +268,7 @@ class SGBP_Admin {
 						<label style="display:block;">
 							<input type="checkbox" name="sgbp_locations[]" value="<?php echo esc_attr( $location['name'] ); ?>" <?php checked( in_array( $location['name'], (array) $settings['locations'], true ) ); ?> />
 							<?php
-							$location_label = isset( $location['locationName'] ) ? $location['locationName'] : ( isset( $location['storeCode'] ) ? $location['storeCode'] : $location['name'] );
+							$location_label = isset( $location['title'] ) && '' !== $location['title'] ? $location['title'] : ( isset( $location['locationName'] ) ? $location['locationName'] : ( isset( $location['storeCode'] ) ? $location['storeCode'] : $location['name'] ) );
 							if ( ! empty( $location['address']['addressLines'] ) ) {
 								$location_label .= ' — ' . implode( ', ', (array) $location['address']['addressLines'] );
 							}
